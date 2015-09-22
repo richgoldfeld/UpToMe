@@ -1,0 +1,32 @@
+#include "ShaderProgram.h"
+#include "Matrix.h"
+
+
+After the #endif:
+
+glViewport(0, 0, 640, 360);
+ShaderProgram program = ShaderProgram(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+Matrix modelMatrix;
+Matrix viewMatrix;
+Matrix projectionMatrix;
+projectionMatrix.setOrthoProjection(-3.55, 3.55, -2.0, 2.0, -1, 1);
+
+After the while loops:
+
+program.setModelMatrix(modelMatrix);
+program.setViewMatrix(viewMatrix);
+program.setProjectionMatrix(projectionMatrix);
+
+After glClear(GL_COLOR_BUFFER_BIT);
+
+glUseProgram(program.programID);
+
+float vertices[] = {0.5f, -0.5f, 0.0f, 0.5f, -0.5f, -0.5f};
+glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+glEnableVertexAttribArray(program.positionAttribute);
+glDrawArrays(GL_TRIANGLES, 0, 3);
+
+glDisableVertexAttribPointer(program.positionAttribute);
+
+
+.Rotate(45.0f * (3.1415926f / 180.0f));
