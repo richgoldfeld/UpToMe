@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
 			if ((ypos2 - 0.8) > -2){ ypos2 -= elapsed *	distance; }
 		}
 
-		xbp += cos(angle * RAD) * elapsed * distance * 5;
-		ybp += sin(angle * RAD) * elapsed * distance * 5;
+		xbp += cos(angle * RAD) * elapsed * distance * 2;
+		ybp += sin(angle * RAD) * elapsed * distance * 2;
 
 		if ((xbp - .1) <= -3.5){
 			xbp = .05f;
