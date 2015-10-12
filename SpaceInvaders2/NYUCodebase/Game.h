@@ -36,8 +36,10 @@ private:
 	int score;
 	int damage;
 	GLuint fontTexture;
+	GLuint spriteSheet;
 	bool alive;
 	Entity* player;
+	float sincelastfire;
 	std::vector<Entity*> aliens;
 	std::vector<Entity*> bullets;
 	std::vector<Entity*> lasers;
@@ -45,5 +47,5 @@ private:
 	void RenderGame();
 	void Victory();
 	void Loss();
-
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 };

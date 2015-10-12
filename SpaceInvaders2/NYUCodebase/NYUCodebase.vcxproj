@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="pixel_font.png" />
+    <Image Include="sprites.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

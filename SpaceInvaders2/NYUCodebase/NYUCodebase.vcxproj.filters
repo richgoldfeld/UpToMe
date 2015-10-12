@@ -61,5 +61,8 @@
     <Image Include="pixel_font.png">
       <Filter>Source Files</Filter>
     </Image>
+    <Image Include="sprites.png">
+      <Filter>Source Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
