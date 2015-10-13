@@ -30,7 +30,7 @@ void Game::Setup() {
 	#endif
 	lastFrameTicks = 0.0f;
 	glViewport(0, 0, 800, 600);
-	program = new ShaderProgram(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+	program = new ShaderProgram(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	projectionMatrix.setOrthoProjection(-1.33f, 1.33f, -1.0f, 1.0f, -1.0f, 1.0f);
 	bool done = false;
 	fontTexture = LoadTexture("pixel_font.png");
@@ -40,16 +40,16 @@ void Game::Setup() {
 	score = 0;
 	damage = 0;
 	sincelastfire = 0.0f;
-	player = new Entity(0.0f, -0.85f, 0.15f, 0.1f);
+	player = new Entity(spriteSheet, 0.0f, -0.85f, 0.15f, 0.1f, 0, 86, 99, 75);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	float initialy = 0.7f;
 	for (float i = -0.88f; i < .88f; i += .16f){
-		aliens.push_back(new Entity(i, initialy, 0.15f, 0.1f));
-		aliens.push_back(new Entity(i, initialy - .11f, 0.15f, 0.1f));
-		aliens.push_back(new Entity(i, initialy - .22f, 0.15f, 0.1f));
-		aliens.push_back(new Entity(i, initialy - .33f, 0.15f, 0.1f));
-		aliens.push_back(new Entity(i, initialy - .44f, 0.15f, 0.1f));
+		aliens.push_back(new Entity(spriteSheet, i, initialy, 0.15f, 0.1f, 0, 0, 104, 84));
+		aliens.push_back(new Entity(spriteSheet, i, initialy - .11f, 0.15f, 0.1f, 0, 0, 104, 84));
+		aliens.push_back(new Entity(spriteSheet, i, initialy - .22f, 0.15f, 0.1f, 0, 0, 104, 84));
+		aliens.push_back(new Entity(spriteSheet, i, initialy - .33f, 0.15f, 0.1f, 0, 0, 104, 84));
+		aliens.push_back(new Entity(spriteSheet, i, initialy - .44f, 0.15f, 0.1f, 0, 0, 104, 84));
 	}
 	for (Entity* e : aliens){
 		e->velocity_x = 0.3f;
@@ -172,7 +172,7 @@ void Game::Update(float elapsed) {
 		sincelastfire += elapsed;
 		if (keys[SDL_SCANCODE_SPACE]){
 			if (sincelastfire > 0.7){
-				bullets.push_back(new Entity(player->xpos, (player->ypos + player->iheight), .03f, player->iheight));
+				bullets.push_back(new Entity(spriteSheet, player->xpos, (player->ypos + player->iheight), .03f, player->iheight, 0, 163, 13, 37));
 				bullets[bullets.size() - 1]->velocity_y = 0.6f;
 				sincelastfire = 0.0f;
 			}

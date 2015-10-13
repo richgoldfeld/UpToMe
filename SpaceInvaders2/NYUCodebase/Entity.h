@@ -1,20 +1,21 @@
 #pragma once
 #include "ShaderProgram.h"
-#include "SheetSprite.h"
 #include <iostream>
 class Entity {
 public:
-	Entity();
-	Entity(float x, float y, float width, float height);
+	Entity(GLuint texture, float x, float y, float width, float height, 
+		float spritex, float spritey, float spritewidth, float spriteheight);
 	void Update(float elapsed);
 	void Render(ShaderProgram *program);
-	//bool collidesWith(Entity *entity);
-	//SheetSprite sprite;
 	float xpos;
 	float ypos;
+	float u;
+	float v;
 	float iwidth;
 	float iheight;
+	float swidth;
+	float sheight;
 	float velocity_x;
 	float velocity_y;
-	//bool isStatic;
+	GLuint textureId;
 };
