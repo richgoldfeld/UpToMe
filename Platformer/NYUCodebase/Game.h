@@ -27,8 +27,8 @@ public:
 	void Render();
 	void RenderTiles();
 	void Update(float elapsed);
-	bool readHeader(ifstream &input);
-	bool readLayerData(ifstream &input);
+	bool readHeader(ifstream &stream);
+	bool readLayerData(ifstream &stream);
 	
 private:
 	bool done;

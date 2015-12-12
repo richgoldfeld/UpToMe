@@ -79,7 +79,6 @@ bool Game::readLayerData(std::ifstream &stream) {
 	}
 	return true;
 }
-
 void Game::Setup() {
 	// SDL and OpenGL initialization
 	SDL_Init(SDL_INIT_VIDEO);
@@ -92,7 +91,6 @@ void Game::Setup() {
 	lastFrameTicks = 0.0f;
 	glViewport(0, 0, 800, 600);
 	program = new ShaderProgram(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
-
 
 	ifstream infile("mymap.txt");
 	string line;
@@ -112,7 +110,6 @@ void Game::Setup() {
 	//player = new Entity(spriteSheet, 0.0f, -0.85f, 0.15f, 0.1f, 0, 86, 99, 75);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 }
 Game::~Game() {
 	// SDL and OpenGL cleanup (joysticks, textures, etc).
@@ -123,12 +120,12 @@ Game::~Game() {
 void Game::RenderTiles(){
 	vector<float> vertexData;
 	vector<float> texCoordData;
-	for (int y = 0; y < 512; y++) {
-		for (int x = 0; x < 2048; x++) {
-			float u = (float)(((int)levelData[y][x]) % 128) / (float)128;
-			float v = (float)(((int)levelData[y][x]) / 32) / (float)32;
-			float spriteWidth = 1.0f / (float)128;
-			float spriteHeight = 1.0f / (float)32;
+	for (int y = 0; y < mapHeight * 16; y++) {
+		for (int x = 0; x < mapWidth * 16; x++) {
+			float u = (float)(((int)levelData[y][x]) % mapWidth) / (float)mapWidth;
+			float v = (float)(((int)levelData[y][x]) / mapWidth) / (float)mapHeight;
+			float spriteWidth = 1.0f / (float)mapWidth;
+			float spriteHeight = 1.0f / (float)mapHeight;
 			vertexData.insert(vertexData.end(), {
 				TILE_SIZE * x, -TILE_SIZE * y,
 				TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
@@ -147,13 +144,14 @@ void Game::RenderTiles(){
 			});
 		}
 	}
-	
+	float* vertexData2 = &vertexData[0];
+	float* texCoordData2 = &texCoordData[0];
 	glUseProgram(program->programID);
-	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertexData);
+	glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertexData2);
 	glEnableVertexAttribArray(program->positionAttribute);
-	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData);
+	glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoordData2);
 	glEnableVertexAttribArray(program->texCoordAttribute);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	glBindTexture(GL_TEXTURE_2D, spriteSheet);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDisableVertexAttribArray(program->positionAttribute);
 	glDisableVertexAttribArray(program->texCoordAttribute);
@@ -166,6 +164,7 @@ void Game::Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	//player->Render(program);
+	RenderTiles();
 	
 	SDL_GL_SwapWindow(displayWindow);
 	// clear, render and swap the window
