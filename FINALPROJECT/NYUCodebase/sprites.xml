@@ -1,0 +1,7 @@
+<TextureAtlas imagePath="sprites.png">
+	<SubTexture name="boxAlt.png" x="72" y="72" width="70" height="70"/>
+	<SubTexture name="dirt.png" x="72" y="0" width="70" height="70"/>
+	<SubTexture name="dirtCliffLeft.png" x="0" y="0" width="70" height="70"/>
+	<SubTexture name="dirtCliffRight.png" x="0" y="143" width="70" height="70"/>
+	<SubTexture name="slice36_36.png" x="0" y="72" width="70" height="69"/>
+</TextureAtlas>
