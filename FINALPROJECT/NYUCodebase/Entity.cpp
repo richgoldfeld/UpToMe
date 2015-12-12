@@ -34,8 +34,10 @@ Entity::Entity(GLuint texture, float x, float y, float width, float height,
 	sheight = spriteheight / 256;
 	velocity_x = 0.0f;
 	velocity_y = 0.0f;
+	sinceLastFire = 0.0f;
 }
 void Entity::Update(float elapsed){
-	xpos += velocity_x * elapsed;
-	ypos += velocity_y * elapsed;
+	//xpos += velocity_x * elapsed;
+	//ypos += velocity_y * elapsed;
+	sinceLastFire += elapsed;
 }

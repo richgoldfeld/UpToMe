@@ -64,7 +64,9 @@ void Game::Render() {
 	for (Entity* e : enemies){
 		e->Render(program);
 	}
-	
+	for (Entity* e : bullets){
+		e->Render(program);
+	}
 	SDL_GL_SwapWindow(displayWindow);
 	// clear, render and swap the window
 }
@@ -87,28 +89,31 @@ void Game::Update(float elapsed) {
 	currentOrthTop += elapsed * move; 
 	currentOrthBottom += elapsed * move;
 	sinceLastSpawn += elapsed;
-
 	//ENEMY SPAWN
 	if (sinceLastSpawn > 2){
 		sinceLastSpawn = 0;
 		float randX = -.9 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (.9 - -.9)));
-		enemies.push_back(new Entity(spriteSheet, randX, currentOrthTop - .2, 0.15f, 0.2f, 0, 0, 104, 84));
+		enemies.push_back(new Entity(spriteSheet, randX, currentOrthTop, 0.15f, 0.2f, 0, 0, 104, 84));
+		enemies[enemies.size() - 1]->sinceLastFire = 0.0f;
 	}
-
-	//ENEMY OFF SCREEN
+	//ENEMY OR BULLET OFF SCREEN
 	for (size_t i = 0; i < enemies.size(); i++){
 		if (enemies[i]->ypos < currentOrthBottom - .1){
 			delete enemies[i];
 			enemies.erase(enemies.begin() + i);
 		}
 	}
-	
+	for (size_t i = 0; i < bullets.size(); i++){
+		if (bullets[i]->ypos < currentOrthBottom - .1){
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+		}
+	}
 	//QUIT METHOD
 	if (keys[SDL_SCANCODE_ESCAPE]){
 		SDL_Quit();
 		done = true;
 	}
-
 	//PLAYER 1 MOVEMENT
 	if (keys[SDL_SCANCODE_LEFT] && player->xpos > -.94){
 		player->xpos -= elapsed * .6f;
@@ -122,7 +127,6 @@ void Game::Update(float elapsed) {
 	else if (keys[SDL_SCANCODE_DOWN] && player->ypos > currentOrthBottom + .09f){
 		player->ypos -= elapsed * .9f;
 	}
-
 	//PLAYER 2 MOVEMENT
 	if (keys[SDL_SCANCODE_A] && player2->xpos > -.94){
 		player2->xpos -= elapsed * .6f;
@@ -136,11 +140,22 @@ void Game::Update(float elapsed) {
 	else if (keys[SDL_SCANCODE_S] && player2->ypos > currentOrthBottom + .09f){
 		player2->ypos -= elapsed * .9f;
 	}
+	//ENEMIES SHOOT
+	for (Entity* e : enemies){
+		e->Update(elapsed);
+		if (e->sinceLastFire > 4){
+			e->sinceLastFire = 0;
+			bullets.push_back(new Entity(spriteSheet, e->xpos, (e->ypos - e->iheight), .03f, e->iheight, 0, 163, 13, 37));
+			bullets[bullets.size() - 1]->velocity_y = 0.6f;
+		}
+	}
 	for (Entity* e : enemies){
 		e->Update(elapsed);
 	}
 	for (Entity* e : bullets){
-		e->Update(elapsed);
+		e->ypos -= elapsed * .25;
+		if (e->xpos > 0){ e->xpos -= elapsed * .08; }
+		else { e->xpos += elapsed * .08; }
 	}
 }
 bool Game::UpdateAndRender() {

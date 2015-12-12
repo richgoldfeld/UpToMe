@@ -17,4 +17,5 @@ public:
 	float velocity_x;
 	float velocity_y;
 	GLuint textureId;
+	float sinceLastFire;
 };
