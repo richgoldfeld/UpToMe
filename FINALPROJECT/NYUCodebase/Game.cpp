@@ -94,6 +94,14 @@ void Game::Update(float elapsed) {
 		float randX = -.9 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (.9 - -.9)));
 		enemies.push_back(new Entity(spriteSheet, randX, currentOrthTop - .2, 0.15f, 0.2f, 0, 0, 104, 84));
 	}
+
+	//ENEMY OFF SCREEN
+	for (size_t i = 0; i < enemies.size(); i++){
+		if (enemies[i]->ypos < currentOrthBottom - .1){
+			delete enemies[i];
+			enemies.erase(enemies.begin() + i);
+		}
+	}
 	
 	//QUIT METHOD
 	if (keys[SDL_SCANCODE_ESCAPE]){
