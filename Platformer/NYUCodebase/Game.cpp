@@ -22,7 +22,7 @@ GLuint LoadTexture(const char *image_path) {
 Game::Game() {
 	Setup();
 }
-/*
+
 bool Game::readHeader(std::ifstream &stream) {
 	string line;
 	mapWidth = -1;
@@ -80,7 +80,7 @@ bool Game::readLayerData(std::ifstream &stream) {
 	}
 	return true;
 }
-*/
+
 void Game::Setup() {
 	// SDL and OpenGL initialization
 	SDL_Init(SDL_INIT_VIDEO);
@@ -94,7 +94,7 @@ void Game::Setup() {
 	glViewport(0, 0, 800, 600);
 	program = new ShaderProgram(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
 
-	/*ifstream infile("mymap.txt");
+	ifstream infile("mymap.txt");
 	string line;
 	while (getline(infile, line)) {
 		if (line == "[header]") {
@@ -104,7 +104,7 @@ void Game::Setup() {
 			readLayerData(infile);
 		}
 	}
-	*/
+	
 	TILE_SIZE = 16.0f;
 
 	projectionMatrix.setOrthoProjection(-1.33f, 1.33f, -1.0f, 1.0f, -1.0f, 1.0f);
@@ -123,8 +123,8 @@ Game::~Game() {
 void Game::RenderTiles(){
 	vector<float> vertexData;
 	vector<float> texCoordData;
-	for (int y = 0; y < mapHeight * 16; y++) {
-		for (int x = 0; x < mapWidth * 16; x++) {
+	for (int y = 0; y < mapHeight; y++) {
+		for (int x = 0; x < mapWidth; x++) {
 			float u = (float)(((int)levelData[y][x]) % mapWidth) / (float)mapWidth;
 			float v = (float)(((int)levelData[y][x]) / mapWidth) / (float)mapHeight;
 			float spriteWidth = 1.0f / (float)mapWidth;

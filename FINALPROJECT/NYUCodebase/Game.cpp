@@ -39,11 +39,15 @@ void Game::Setup() {
 	bool done = false;
 	currentOrthTop = 1.5f;
 	currentOrthBottom = -1.5f;
-	//spriteSheet = LoadTexture("sprites.png");
+	spriteSheet = LoadTexture("sprites.png");
 	player = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 0, 86, 99, 75);
 	player2 = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 0, 86, 99, 75);
+	p1health = new Entity(spriteSheet, -0.8f, -1.425f, 0.4f, 0.15f, 0, 0, 6000, 2000);
+	p2health = new Entity(spriteSheet, 0.8f, -1.425f, 0.4f, 0.15f, 0, 0, 6000, 2000);
 	sinceLastSpawn = 0.0f;
 	srand(static_cast <unsigned> (time(0)));
+	player1health = 3;
+	player2health = 3;
 }
 Game::~Game() {
 	// SDL and OpenGL cleanup (joysticks, textures, etc).
@@ -60,6 +64,8 @@ void Game::Render() {
 	
 	player->Render(program);
 	player2->Render(program);
+	p1health->Render(program);
+	p2health->Render(program);
 
 	for (Entity* e : enemies){
 		e->Render(program);
@@ -80,12 +86,13 @@ void Game::ProcessEvents() {
 void Game::Update(float elapsed) {
 	// move things based on time passed
 	// check for collisions and respond to them
-
 	move = .3f;
 	
 	viewMatrix.Translate(0.0f, -move * elapsed, 0.0f);
 	player->ypos += move * elapsed;
 	player2->ypos += move * elapsed;
+	p1health->ypos += move * elapsed;
+	p2health->ypos += move * elapsed;
 	currentOrthTop += elapsed * move; 
 	currentOrthBottom += elapsed * move;
 	sinceLastSpawn += elapsed;
@@ -149,6 +156,53 @@ void Game::Update(float elapsed) {
 			bullets[bullets.size() - 1]->velocity_y = 0.6f;
 		}
 	}
+
+	//Player collision with bullets
+	for (size_t i = 0; i < bullets.size(); i++){
+		Entity* e = bullets[i];
+		if (player->xpos < e->xpos + e->iwidth &&
+			player->xpos + player->iwidth > e->xpos &&
+			player->ypos < e->ypos + e->iheight &&
+			player->iheight + player->ypos > e->ypos)
+		{
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+			player1health--;
+		}
+		else if (player2->xpos < e->xpos + e->iwidth &&
+			player2->xpos + player2->iwidth > e->xpos &&
+			player2->ypos < e->ypos + e->iheight &&
+			player2->iheight + player2->ypos > e->ypos)
+		{
+			delete bullets[i];
+			bullets.erase(bullets.begin() + i);
+			player2health--;
+		}
+	}
+	//Enemy collision with player
+	for (size_t i = 0; i < enemies.size(); i++){
+		Entity* e = enemies[i];
+		if (player->xpos < e->xpos + e->iwidth &&
+			player->xpos + player->iwidth > e->xpos &&
+			player->ypos < e->ypos + e->iheight &&
+			player->iheight + player->ypos > e->ypos)
+		{
+			delete enemies[i];
+			enemies.erase(enemies.begin() + i);
+			player1health--;
+		}
+		else if (player2->xpos < e->xpos + e->iwidth &&
+			player2->xpos + player2->iwidth > e->xpos &&
+			player2->ypos < e->ypos + e->iheight &&
+			player2->iheight + player2->ypos > e->ypos)
+		{
+			delete enemies[i];
+			enemies.erase(enemies.begin() + i);
+			player2health--;
+		}
+	}
+
+
 	for (Entity* e : enemies){
 		e->Update(elapsed);
 	}

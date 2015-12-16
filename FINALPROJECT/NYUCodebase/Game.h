@@ -47,12 +47,16 @@ private:
 	GLuint spriteSheet;
 	Entity* player;
 	Entity* player2;
+	Entity* p1health;
+	Entity* p2health;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 	float currentOrthTop;
 	float currentOrthBottom;
 	int state;
 	float move;
+	int player1health;
+	int player2health;
 
 	float sinceLastSpawn;
 	vector<Entity*> enemies;
