@@ -18,6 +18,7 @@
 #include <SDL_mixer.h>
 #include <ctime>
 #include <cstdlib>
+#include <math.h>
 using namespace std;
 
 enum GameState { STATE_MENU, STATE_LEVEL1, STATE_LEVEL2, STATE_LEVEL3, STATE_1WIN, STATE_2WIN};

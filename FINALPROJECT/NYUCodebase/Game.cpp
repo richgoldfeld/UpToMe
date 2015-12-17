@@ -275,8 +275,26 @@ void Game::Update(float elapsed) {
 		}
 		for (Entity* e : bullets){
 			e->ypos -= elapsed * .25;
-			if (e->xpos > 0){ e->xpos -= elapsed * .08; }
-			else { e->xpos += elapsed * .08; }
+			//player1 closer
+			if ((abs(e->xpos - player->xpos)) < (abs(e->xpos - player2->xpos))){
+				if (e->xpos > player->xpos){
+					e->xpos -= elapsed * .08;
+				}
+				else if(e->xpos < player->xpos){
+					e->xpos += elapsed * .08;
+				}
+			}
+			else{
+				if (e->xpos > player2->xpos){
+					e->xpos -= elapsed * .08;
+				}
+				else if (e->xpos < player2->xpos){
+					e->xpos += elapsed * .08;
+				}
+			}
+
+			/*if (e->xpos > 0){ e->xpos -= elapsed * .08; }
+			else { e->xpos += elapsed * .08; }*/
 		}
 	}
 }
