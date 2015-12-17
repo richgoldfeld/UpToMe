@@ -72,4 +72,10 @@ private:
 	float sinceLastSpawn;
 	vector<Entity*> enemies;
 	vector<Entity*> bullets;
+
+	Mix_Music *music;
+	Mix_Chunk *explosion;
+
+	float screenShakeValue;
+	float timeTrack;
 };

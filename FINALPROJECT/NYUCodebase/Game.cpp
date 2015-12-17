@@ -18,6 +18,12 @@ GLuint LoadTexture(const char *image_path) {
 	SDL_FreeSurface(surface);
 	return textureID;
 }
+float easeOut(float from, float to, float time) {
+	float oneMinusT = 1.0f - time;
+	float tVal = 1.0f - (oneMinusT * oneMinusT * oneMinusT *
+		oneMinusT * oneMinusT);
+	return (1.0f - tVal)*from + tVal*to;
+}
 Game::Game() {
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("GoldfeldFinal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 600, SDL_WINDOW_OPENGL);
@@ -30,6 +36,9 @@ Game::Game() {
 	program = new ShaderProgram(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	music = Mix_LoadMUS("100.mp3");
+	Mix_PlayMusic(music, 0);
 	Setup();
 }
 void Game::Setup() {
@@ -45,6 +54,14 @@ void Game::Setup() {
 	backgroundImage = LoadTexture("background.png");
 	otherSheet = LoadTexture("sprites2.png");
 	state = 0;
+	for (GLuint i = 0; i < enemies.size(); i++) { 
+		delete enemies[i]; 
+		enemies.erase(enemies.begin() + i);
+	}
+	for (GLuint i = 0; i < bullets.size(); i++) { 
+		delete bullets[i]; 
+		bullets.erase(bullets.begin() + i);
+	}
 	menu = new Entity(otherSheet, 0, (currentOrthTop - 1.5f), 2.0f, 2.0f, 0, 0, (623.0f / 1024.0f), (460.0f / 512.0f));
 	background = new Entity(backgroundImage, 0, 0, 2.0f, 400.0f, 0.0f, 0.0f, (600.0f / 2048.0f), (800.0f / 1024.0f * 80.0f));
 	player = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 
@@ -53,12 +70,15 @@ void Game::Setup() {
 		(633.0f / 1024.0f), 0.0f, (158.0f / 1024.0f), (275.0f / 512.0f));
 	p1health = new Entity(healthImage, -0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
 	p2health = new Entity(healthImage, 0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
-	endGame = new Entity(otherSheet, 0, 0, 1.0f, 0.2f,
+	endGame = new Entity(otherSheet, 0, currentOrthTop, 1.0f, 0.2f,
 		0.0f, (478.0f / 512.0f), (90.0f / 1024.0f), (14.0f / 512.0f));
 	sinceLastSpawn = 0.0f;
 	srand(static_cast <unsigned> (time(0)));
 	player1health = 3.0f;
 	player2health = 3.0f;
+	explosion = Mix_LoadWAV("explosion.wav");
+	screenShakeValue = 0.0f;
+	timeTrack = 0.0f;
 }
 Game::~Game() {
 	// SDL and OpenGL cleanup (joysticks, textures, etc).
@@ -70,6 +90,8 @@ Game::~Game() {
 	delete background;
 	for (GLuint i = 0; i < enemies.size(); i++) { delete enemies[i]; }
 	for (GLuint i = 0; i < bullets.size(); i++) { delete bullets[i]; }
+	Mix_FreeMusic(music);
+	Mix_FreeChunk(explosion);
 	SDL_Quit();
 }
 void Game::Render() {
@@ -113,20 +135,34 @@ void Game::Update(float elapsed) {
 	// move things based on time passed
 	// check for collisions and respond to them
 	//QUIT METHOD
+	screenShakeValue += .05;
+	float screenShakeSpeed = 0.1f;
+	float screenShakeIntensity = 0.00001f;
 	if (keys[SDL_SCANCODE_ESCAPE]){
 		SDL_Quit();
 		done = true;
 	}
 	if (state == 0){
-		if (keys[SDL_SCANCODE_1]){state = 1;}
+		viewMatrix.Translate(sin(screenShakeValue * screenShakeSpeed)* screenShakeIntensity, 
+			sin(screenShakeValue * screenShakeSpeed)* (screenShakeIntensity * 4), 0.0f);
+		if (keys[SDL_SCANCODE_1]){
+			state = 1;
+			viewMatrix.identity();
+		}
 		else if (keys[SDL_SCANCODE_2]){	state = 2;	}
 		else if (keys[SDL_SCANCODE_3]){ state = 3;	player1health = 1; player2health = 1; }
 	}
 	else if (state == 4 || state == 5){
+		viewMatrix.identity();
+		timeTrack += elapsed * .4;
 		if (keys[SDL_SCANCODE_SPACE]){
 			state = 0;
 			Setup();
 		}
+		if (timeTrack < 1.3){
+			endGame->ypos = easeOut(4, 0, timeTrack);
+		}
+
 	}
 	else if (state == 1 || state == 2 || state == 3){
 		if (state == 2){
@@ -216,6 +252,7 @@ void Game::Update(float elapsed) {
 				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 				player1health--;
+				Mix_PlayChannel(-1, explosion, 0);
 			}
 			else if (player2->xpos < e->xpos + e->iwidth &&
 				player2->xpos + player2->iwidth > e->xpos &&
@@ -225,6 +262,7 @@ void Game::Update(float elapsed) {
 				delete bullets[i];
 				bullets.erase(bullets.begin() + i);
 				player2health--;
+				Mix_PlayChannel(-1, explosion, 0);
 			}
 		}
 		//Enemy collision with player
@@ -238,6 +276,7 @@ void Game::Update(float elapsed) {
 				delete enemies[i];
 				enemies.erase(enemies.begin() + i);
 				player1health--;
+				Mix_PlayChannel(-1, explosion, 0);
 			}
 			else if (player2->xpos < e->xpos + e->iwidth &&
 				player2->xpos + player2->iwidth > e->xpos &&
@@ -247,6 +286,7 @@ void Game::Update(float elapsed) {
 				delete enemies[i];
 				enemies.erase(enemies.begin() + i);
 				player2health--;
+				Mix_PlayChannel(-1, explosion, 0);
 			}
 		}
 		//Change players visual health based on damage
@@ -327,11 +367,9 @@ void Game::RenderGame(){
 	}
 }
 void Game::RenderEndGame(){
-	endGame->ypos = currentOrthTop - 1.5;
+	//endGame->ypos = currentOrthTop - 1.5;
 	if (state == 5){
 		endGame->v = (462.0f / 512.0f);
-		endGame = new Entity(otherSheet, 0, currentOrthTop - 1.5, 1.0f, 0.2f,
-			0.0f, (462.0f / 512.0f), (90.0f / 1024.0f), (14.0f / 512.0f));
 	}
 	endGame->Render(program);
 }
