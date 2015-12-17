@@ -47,9 +47,9 @@ void Game::Setup() {
 	state = 0;
 	menu = new Entity(otherSheet, 0, (currentOrthTop - 1.5f), 2.0f, 2.0f, 0, 0, (623.0f / 1024.0f), (460.0f / 512.0f));
 	background = new Entity(backgroundImage, 0, 0, 2.0f, 400.0f, 0.0f, 0.0f, (600.0f / 2048.0f), (800.0f / 1024.0f * 80.0f));
-	player = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 
+	player = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 
 		(472.0f / 1024.0f), 0.0f, (159.0f / 1024.0f), (276.0f / 512.0f));
-	player2 = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 
+	player2 = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 
 		(633.0f / 1024.0f), 0.0f, (158.0f / 1024.0f), (275.0f / 512.0f));
 	p1health = new Entity(healthImage, -0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
 	p2health = new Entity(healthImage, 0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -120,7 +120,7 @@ void Game::Update(float elapsed) {
 	if (state == 0){
 		if (keys[SDL_SCANCODE_1]){state = 1;}
 		else if (keys[SDL_SCANCODE_2]){	state = 2;	}
-		else if (keys[SDL_SCANCODE_3]){	state = 3;	}
+		else if (keys[SDL_SCANCODE_3]){ state = 3;	player1health = 1; player2health = 1; }
 	}
 	else if (state == 4 || state == 5){
 		if (keys[SDL_SCANCODE_SPACE]){
@@ -145,6 +145,9 @@ void Game::Update(float elapsed) {
 		currentOrthTop += elapsed * move;
 		currentOrthBottom += elapsed * move;
 		sinceLastSpawn += elapsed;
+		if (state == 2 || state == 3){
+			sinceLastSpawn += elapsed;
+		}
 		//ENEMY SPAWN
 		if (sinceLastSpawn > 2){
 			sinceLastSpawn = 0;
