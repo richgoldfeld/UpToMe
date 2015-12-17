@@ -61,6 +61,9 @@
     <Image Include="sprites.png">
       <Filter>Source Files</Filter>
     </Image>
+    <Image Include="health.png">
+      <Filter>Source Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="mymap.txt">

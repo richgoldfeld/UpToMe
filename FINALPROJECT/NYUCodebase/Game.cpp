@@ -36,20 +36,25 @@ void Game::Setup() {
 	// SDL and OpenGL initialization
 	lastFrameTicks = 0.0f;
 	projectionMatrix.setOrthoProjection(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+	viewMatrix.identity();
 	bool done = false;
 	currentOrthTop = 1.5f;
 	currentOrthBottom = -1.5f;
 	spriteSheet = LoadTexture("sprites.png");
 	healthImage = LoadTexture("health.png");
 	backgroundImage = LoadTexture("background.png");
-	state = 1;
-	background = new Entity(backgroundImage, 0, 0, 2.0f, 300.0f, 0.0f, 0.0f, 1.0f, 100.0f);
+	otherSheet = LoadTexture("sprites2.png");
+	state = 0;
+	menu = new Entity(otherSheet, 0, (currentOrthTop - 1.5f), 2.0f, 2.0f, 0, 0, (623.0f / 1024.0f), (460.0f / 512.0f));
+	background = new Entity(backgroundImage, 0, 0, 2.0f, 400.0f, 0.0f, 0.0f, (600.0f / 2048.0f), (800.0f / 1024.0f * 80.0f));
 	player = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 
 		(472.0f / 1024.0f), 0.0f, (159.0f / 1024.0f), (276.0f / 512.0f));
 	player2 = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 
 		(633.0f / 1024.0f), 0.0f, (158.0f / 1024.0f), (275.0f / 512.0f));
 	p1health = new Entity(healthImage, -0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
 	p2health = new Entity(healthImage, 0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
+	endGame = new Entity(otherSheet, 0, 0, 1.0f, 0.2f,
+		0.0f, (478.0f / 512.0f), (90.0f / 1024.0f), (14.0f / 512.0f));
 	sinceLastSpawn = 0.0f;
 	srand(static_cast <unsigned> (time(0)));
 	player1health = 3.0f;
@@ -58,6 +63,11 @@ void Game::Setup() {
 Game::~Game() {
 	// SDL and OpenGL cleanup (joysticks, textures, etc).
 	delete player;
+	delete endGame;
+	delete player2;
+	delete p1health;
+	delete p2health;
+	delete background;
 	for (GLuint i = 0; i < enemies.size(); i++) { delete enemies[i]; }
 	for (GLuint i = 0; i < bullets.size(); i++) { delete bullets[i]; }
 	SDL_Quit();
@@ -107,7 +117,24 @@ void Game::Update(float elapsed) {
 		SDL_Quit();
 		done = true;
 	}
-	if (state == 1 || state == 2 || state == 3){
+	if (state == 0){
+		if (keys[SDL_SCANCODE_1]){state = 1;}
+		else if (keys[SDL_SCANCODE_2]){	state = 2;	}
+		else if (keys[SDL_SCANCODE_3]){	state = 3;	}
+	}
+	else if (state == 4 || state == 5){
+		if (keys[SDL_SCANCODE_SPACE]){
+			state = 0;
+			Setup();
+		}
+	}
+	else if (state == 1 || state == 2 || state == 3){
+		if (state == 2){
+			background->u = (1204.0f / 2048.0f);
+		}
+		else if (state == 3){
+			background->u = (602.0f / 2048.0f);
+		}
 		move = .3f;
 		viewMatrix.Translate(0.0f, -move * elapsed, 0.0f);
 		player->ypos += move * elapsed;
@@ -261,7 +288,8 @@ bool Game::UpdateAndRender() {
 }
 
 void Game::RenderMenu() {
-	background->Render(program);
+	menu->ypos = (currentOrthTop - 1.5f);
+	menu->Render(program);
 }
 void Game::RenderGame(){
 	background->Render(program);
@@ -278,5 +306,11 @@ void Game::RenderGame(){
 	}
 }
 void Game::RenderEndGame(){
-
+	endGame->ypos = currentOrthTop - 1.5;
+	if (state == 5){
+		endGame->v = (462.0f / 512.0f);
+		endGame = new Entity(otherSheet, 0, currentOrthTop - 1.5, 1.0f, 0.2f,
+			0.0f, (462.0f / 512.0f), (90.0f / 1024.0f), (14.0f / 512.0f));
+	}
+	endGame->Render(program);
 }

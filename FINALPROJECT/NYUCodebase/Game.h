@@ -50,12 +50,15 @@ private:
 	GLuint spriteSheet;
 	GLuint healthImage;
 	GLuint backgroundImage;
+	GLuint otherSheet;
 
 	Entity* player;
 	Entity* player2;
 	Entity* p1health;
 	Entity* p2health;
 	Entity* background;
+	Entity* endGame;
+	Entity* menu;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 	float currentOrthTop;

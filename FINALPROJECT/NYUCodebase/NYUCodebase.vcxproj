@@ -94,6 +94,7 @@
     <None Include="vertex_textured.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="health.png" />
     <Image Include="pixel_font.png" />
     <Image Include="sprites.png" />
   </ItemGroup>
