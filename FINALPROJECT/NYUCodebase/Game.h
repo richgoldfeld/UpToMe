@@ -20,6 +20,7 @@
 #include <cstdlib>
 using namespace std;
 
+enum GameState { STATE_MENU, STATE_LEVEL1, STATE_LEVEL2, STATE_LEVEL3, STATE_1WIN, STATE_2WIN};
 GLuint LoadTexture(const char *image_path);
 class Game {
 public:
@@ -29,7 +30,9 @@ public:
 	void ProcessEvents();
 	bool UpdateAndRender();
 	void Render();
-	void RenderTiles();
+	void RenderMenu();
+	void RenderGame();
+	void RenderEndGame();
 	void Update(float elapsed);
 	bool readHeader(ifstream &stream);
 	bool readLayerData(ifstream &stream);
@@ -46,10 +49,13 @@ private:
 	GLuint fontTexture;
 	GLuint spriteSheet;
 	GLuint healthImage;
+	GLuint backgroundImage;
+
 	Entity* player;
 	Entity* player2;
 	Entity* p1health;
 	Entity* p2health;
+	Entity* background;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 	float currentOrthTop;
