@@ -1,7 +1,6 @@
 <TextureAtlas imagePath="sprites.png">
-	<SubTexture name="boxAlt.png" x="72" y="72" width="70" height="70"/>
-	<SubTexture name="dirt.png" x="72" y="0" width="70" height="70"/>
-	<SubTexture name="dirtCliffLeft.png" x="0" y="0" width="70" height="70"/>
-	<SubTexture name="dirtCliffRight.png" x="0" y="143" width="70" height="70"/>
-	<SubTexture name="slice36_36.png" x="0" y="72" width="70" height="69"/>
+	<SubTexture name="bullet.png" x="472" y="278" width="77" height="123"/>
+	<SubTexture name="player1.png" x="472" y="0" width="159" height="276"/>
+	<SubTexture name="player2.png" x="633" y="0" width="158" height="275"/>
+	<SubTexture name="spacestation.png" x="0" y="0" width="470" height="477"/>
 </TextureAtlas>

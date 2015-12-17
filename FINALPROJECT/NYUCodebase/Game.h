@@ -45,6 +45,7 @@ private:
 	SDL_Event event;
 	GLuint fontTexture;
 	GLuint spriteSheet;
+	GLuint healthImage;
 	Entity* player;
 	Entity* player2;
 	Entity* p1health;
@@ -55,8 +56,8 @@ private:
 	float currentOrthBottom;
 	int state;
 	float move;
-	int player1health;
-	int player2health;
+	float player1health;
+	float player2health;
 
 	float sinceLastSpawn;
 	vector<Entity*> enemies;

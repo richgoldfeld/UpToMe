@@ -28,10 +28,10 @@ Entity::Entity(GLuint texture, float x, float y, float width, float height,
 	ypos = y;
 	iwidth = width;
 	iheight = height;
-	u = spritex / 128;
-	v = spritey / 256;
-	swidth = spritewidth / 128;
-	sheight = spriteheight / 256;
+	u = spritex;
+	v = spritey;
+	swidth = spritewidth;
+	sheight = spriteheight;
 	velocity_x = 0.0f;
 	velocity_y = 0.0f;
 	sinceLastFire = 0.0f;

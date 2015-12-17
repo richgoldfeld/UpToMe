@@ -27,7 +27,7 @@ Game::Game() {
 	glewInit();
 	#endif
 	glViewport(0, 0, 400, 600);
-	program = new ShaderProgram(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+	program = new ShaderProgram(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	Setup();
@@ -40,14 +40,19 @@ void Game::Setup() {
 	currentOrthTop = 1.5f;
 	currentOrthBottom = -1.5f;
 	spriteSheet = LoadTexture("sprites.png");
-	player = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 0, 86, 99, 75);
-	player2 = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 0, 86, 99, 75);
-	p1health = new Entity(spriteSheet, -0.8f, -1.425f, 0.4f, 0.15f, 0, 0, 6000, 2000);
-	p2health = new Entity(spriteSheet, 0.8f, -1.425f, 0.4f, 0.15f, 0, 0, 6000, 2000);
+	healthImage = LoadTexture("health.png");
+
+
+	player = new Entity(spriteSheet, 0.2f, -1.3f, 0.12f, 0.18f, 
+		(472.0f / 1024.0f), 0.0f, (159.0f / 1024.0f), (276.0f / 512.0f));
+	player2 = new Entity(spriteSheet, -0.2f, -1.3f, 0.12f, 0.18f, 
+		(633.0f / 1024.0f), 0.0f, (158.0f / 1024.0f), (275.0f / 512.0f));
+	p1health = new Entity(healthImage, -0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
+	p2health = new Entity(healthImage, 0.8f, -1.425f, 0.4f, 0.15f, 0.0f, 0.0f, 1.0f, 1.0f);
 	sinceLastSpawn = 0.0f;
 	srand(static_cast <unsigned> (time(0)));
-	player1health = 3;
-	player2health = 3;
+	player1health = 3.0f;
+	player2health = 3.0f;
 }
 Game::~Game() {
 	// SDL and OpenGL cleanup (joysticks, textures, etc).
@@ -100,7 +105,7 @@ void Game::Update(float elapsed) {
 	if (sinceLastSpawn > 2){
 		sinceLastSpawn = 0;
 		float randX = -.9 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (.9 - -.9)));
-		enemies.push_back(new Entity(spriteSheet, randX, currentOrthTop, 0.15f, 0.2f, 0, 0, 104, 84));
+		enemies.push_back(new Entity(spriteSheet, randX, currentOrthTop, 0.15f, 0.2f, 0, 0, (470.0f/1024.0f), (477.0f/512.0f)));
 		enemies[enemies.size() - 1]->sinceLastFire = 0.0f;
 	}
 	//ENEMY OR BULLET OFF SCREEN
@@ -123,36 +128,37 @@ void Game::Update(float elapsed) {
 	}
 	//PLAYER 1 MOVEMENT
 	if (keys[SDL_SCANCODE_LEFT] && player->xpos > -.94){
-		player->xpos -= elapsed * .6f;
+		player->xpos -= elapsed * .5f;
 	}
 	else if (keys[SDL_SCANCODE_RIGHT] && player->xpos < .94){
-		player->xpos += elapsed * .6f;
+		player->xpos += elapsed * .5f;
 	}
 	if (keys[SDL_SCANCODE_UP] && player->ypos < currentOrthTop - .09f){
-		player->ypos += elapsed * .9f;
+		player->ypos += elapsed * .7f;
 	}
 	else if (keys[SDL_SCANCODE_DOWN] && player->ypos > currentOrthBottom + .09f){
-		player->ypos -= elapsed * .9f;
+		player->ypos -= elapsed * .6f;
 	}
 	//PLAYER 2 MOVEMENT
 	if (keys[SDL_SCANCODE_A] && player2->xpos > -.94){
-		player2->xpos -= elapsed * .6f;
+		player2->xpos -= elapsed * .5f;
 	}
 	else if (keys[SDL_SCANCODE_D] && player2->xpos < .94){
-		player2->xpos += elapsed * .6f;
+		player2->xpos += elapsed * .5f;
 	}
 	if (keys[SDL_SCANCODE_W] && player2->ypos < currentOrthTop - .09f){
-		player2->ypos += elapsed * .9f;
+		player2->ypos += elapsed * .7f;
 	}
 	else if (keys[SDL_SCANCODE_S] && player2->ypos > currentOrthBottom + .09f){
-		player2->ypos -= elapsed * .9f;
+		player2->ypos -= elapsed * .6f;
 	}
 	//ENEMIES SHOOT
 	for (Entity* e : enemies){
 		e->Update(elapsed);
 		if (e->sinceLastFire > 4){
 			e->sinceLastFire = 0;
-			bullets.push_back(new Entity(spriteSheet, e->xpos, (e->ypos - e->iheight), .03f, e->iheight, 0, 163, 13, 37));
+			bullets.push_back(new Entity(spriteSheet, e->xpos, (e->ypos - e->iheight), .06f, e->iheight, 
+				(472.0f/1024.0f), (278.0f/512.0f), (77.0f/1024.0f), (123.0f/512.0f)));
 			bullets[bullets.size() - 1]->velocity_y = 0.6f;
 		}
 	}
@@ -201,7 +207,19 @@ void Game::Update(float elapsed) {
 			player2health--;
 		}
 	}
-
+	//Change players visual health based on damage
+	if (player1health == 2){
+		p1health->swidth = player1health / 3.0f;
+	}
+	else if (player1health == 1){
+		p1health->swidth = player1health / 3.0f;
+	}
+	if (player2health == 2){
+		p2health->swidth = player2health / 3.0f;
+	}
+	else if (player2health == 1){
+		p2health->swidth = player2health / 3.0f;
+	}
 
 	for (Entity* e : enemies){
 		e->Update(elapsed);
